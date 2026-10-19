@@ -1,0 +1,38 @@
+name: Build Android64
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "**"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Android64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Geode mod
+        id: build
+        uses: geode-sdk/build-geode-mod@main
+        with:
+          target: Android64
+          sdk: given
+          combine: false
+          use-lto: false
+          configure-args: "-DCMAKE_UNITY_BUILD=OFF"
+
+      - name: Upload compiled mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: Input-Buffer-Android64
+          path: ${{ steps.build.outputs.build-output }}/*.geode
+          if-no-files-found: error
+          compression-level: 0
+          
